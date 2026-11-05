@@ -1,0 +1,32 @@
+name: Build WinForms EXE
+
+on:
+  workflow_dispatch:  # Allows you to run this manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: windows-latest  # Uses a Windows build server
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'  # Uses the stable .NET 9 SDK
+
+    - name: Publish self-contained EXE
+      run: >
+        dotnet publish iPhoneMirror.Mini.csproj
+        -c Release
+        -r win-x64
+        --self-contained true
+        -p:PublishSingleFile=true
+        -o ./publish-output
+
+    - name: Upload EXE as Downloadable Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: iPhoneMirror-EXE
+        path: ./publish-output/iPhoneMirror.Mini.exe
