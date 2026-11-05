@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 static class Program
 {
@@ -113,7 +114,7 @@ sealed class PhonePanel : Control
         BackColor = Color.FromArgb(20, 20, 28);
     }
 
-    private (float scale, float ox, float oy) Layout()
+    private (float scale, float ox, float oy) ComputeLayout()
     {
         float scale = Math.Min(Width / (float)MirrorState.DeviceW,
                                Height / (float)MirrorState.DeviceH);
@@ -128,7 +129,7 @@ sealed class PhonePanel : Control
         g.SmoothingMode = SmoothingMode.AntiAlias;
         g.Clear(BackColor);
 
-        var (scale, ox, oy) = Layout();
+        var (scale, ox, oy) = ComputeLayout();
         var st = g.Save();
         g.TranslateTransform(ox, oy);
         g.ScaleTransform(scale, scale);
@@ -229,7 +230,7 @@ sealed class PhonePanel : Control
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
-        var (scale, ox, oy) = Layout();
+        var (scale, ox, oy) = ComputeLayout();
         int vx = (int)((e.X - ox) / scale);
         int vy = (int)((e.Y - oy) / scale);
         if (vx < 0 || vy < 0 || vx > MirrorState.DeviceW || vy > MirrorState.DeviceH) return;
